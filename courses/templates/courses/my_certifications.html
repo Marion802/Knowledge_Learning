@@ -1,0 +1,11 @@
+<h1>My certifications</h1>
+
+<ul>
+{% for cert in certifications %}
+    <li>
+        {{ cert.theme.title }} – obtained on {{ cert.obtained_at }}
+    </li>
+{% empty %}
+    <li>No certifications yet</li>
+{% endfor %}
+</ul>

@@ -1,0 +1,23 @@
+<h1>{{ course.title }}</h1>
+<p>{{ course.description }}</p>
+
+<h2>Lessons</h2>
+{% if user.is_authenticated %}
+    <p>
+        <a href="{% url 'buy_course' course.id %}">
+            Buy this course
+        </a>
+    </p>
+{% else %}
+    <p>Please log in to buy this course.</p>
+{% endif %}
+
+<ul>
+{% for lesson in course.lessons.all %}
+    <li>
+        <a href="/courses/lesson/{{ lesson.id }}/">
+            {{ lesson.title }} - {{ lesson.price }} €
+        </a>
+    </li>
+{% endfor %}
+</ul>

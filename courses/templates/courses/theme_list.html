@@ -1,0 +1,18 @@
+<h1>Training themes</h1>
+
+<ul>
+{% for theme in themes %}
+    <li>
+        <strong>{{ theme.title }}</strong>
+        <ul>
+        {% for course in theme.courses.all %}
+            <li>
+                <a href="/courses/course/{{ course.id }}/">
+                    {{ course.title }} - {{ course.price }} €
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    </li>
+{% endfor %}
+</ul>
