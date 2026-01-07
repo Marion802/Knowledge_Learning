@@ -1,3 +1,4 @@
+from urllib import request
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import (
@@ -10,6 +11,10 @@ from .models import (
     CourseValidation,
     Certification
 )
+from django.contrib import messages
+
+
+
 
 
 def theme_list(request):
@@ -23,20 +28,86 @@ def theme_list(request):
 
 def course_detail(request, course_id):
     """
-    Displays the details of a specific course.
-    Includes the list of lessons associated with the course.
+    Displays course details.
+
+    Determines whether the authenticated user has already
+    purchased or validated the course in order to adapt
+    the user interface accordingly.
     """
     course = get_object_or_404(Course, id=course_id)
-    return render(request, 'courses/course_detail.html', {'course': course})
+
+    has_purchased = False
+    is_validated = False
+
+    if request.user.is_authenticated:
+        # Check if the user has already purchased the course
+        has_purchased = CoursePurchase.objects.filter(
+            user=request.user,
+            course=course
+        ).exists()
+
+        # Check if the course has already been validated
+        is_validated = CourseValidation.objects.filter(
+            user=request.user,
+            course=course
+        ).exists()
+
+    return render(
+        request,
+        'courses/course_detail.html',
+        {
+            'course': course,
+            'has_purchased': has_purchased,
+            'is_validated': is_validated
+        }
+    )
+
+
+
 
 
 def lesson_detail(request, lesson_id):
     """
-    Displays the details of a specific lesson.
-    Shows the lesson content and related actions.
+    Displays lesson details.
+
+    Access is granted only if the lesson or the related course
+    has been purchased. The validation status is also checked
+    to prevent duplicate validations.
     """
     lesson = get_object_or_404(Lesson, id=lesson_id)
-    return render(request, 'courses/lesson_detail.html', {'lesson': lesson})
+
+    has_access = False
+    is_validated = False
+
+    if request.user.is_authenticated:
+        # Check access rights (lesson or course purchased)
+        has_access = (
+            LessonPurchase.objects.filter(
+                user=request.user,
+                lesson=lesson
+            ).exists()
+            or
+            CoursePurchase.objects.filter(
+                user=request.user,
+                course=lesson.course
+            ).exists()
+        )
+
+        # Check if the lesson has already been validated
+        is_validated = LessonValidation.objects.filter(
+            user=request.user,
+            lesson=lesson
+        ).exists()
+
+    return render(
+        request,
+        'courses/lesson_detail.html',
+        {
+            'lesson': lesson,
+            'has_access': has_access,
+            'is_validated': is_validated
+        }
+    )
 
 
 @login_required
@@ -47,10 +118,16 @@ def buy_course(request, course_id):
     """
     course = get_object_or_404(Course, id=course_id)
 
-    CoursePurchase.objects.get_or_create(
+    purchase, created = CoursePurchase.objects.get_or_create(
         user=request.user,
         course=course
     )
+
+    if created:
+        messages.success(request, "Course successfully purchased.")
+    else:
+        messages.info(request, "You have already purchased this course.")
+
 
     return redirect('course_detail', course_id=course.id)
 
@@ -63,12 +140,18 @@ def buy_lesson(request, lesson_id):
     """
     lesson = get_object_or_404(Lesson, id=lesson_id)
 
-    LessonPurchase.objects.get_or_create(
+    purchase, created = LessonPurchase.objects.get_or_create(
         user=request.user,
         lesson=lesson
     )
 
+    if created:
+        messages.success(request, "Lesson successfully purchased.")
+    else:
+        messages.info(request, "You have already purchased this lesson.")
+
     return redirect('lesson_detail', lesson_id=lesson.id)
+
 
 
 @login_required

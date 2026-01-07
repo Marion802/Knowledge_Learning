@@ -1,4 +1,7 @@
-from django.http import HttpResponse
+from django.shortcuts import render
 
 def home(request):
-    return HttpResponse("Welcome to Knowledge Learning")
+    """
+    Displays the home page of the Knowledge Learning platform.
+    """
+    return render(request, 'home.html')

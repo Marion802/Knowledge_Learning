@@ -1,0 +1,28 @@
+Code Overview
+=============
+
+The project follows an MVC architecture pattern using Django.
+
+Users App
+---------
+
+The `users` application handles:
+
+- User registration
+- Email account activation
+- Authentication and logout
+- Role management
+
+Courses App
+-----------
+
+The `courses` application handles:
+
+- Training themes
+- Courses and lessons
+- Purchases (courses and lessons)
+- Lesson validation
+- Certification attribution
+
+The business logic is implemented using Django models and views,
+following an object-oriented approach.

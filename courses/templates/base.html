@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Knowledge Learning</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<header style="margin-bottom: 20px;">
+    <img
+        src="{% static 'images/logo.png' %}"
+        alt="Knowledge Learning logo"
+        style="height: 50px;"
+    >
+    <a href="{% url 'home' %}">Home</a> |
+    <a href="{% url 'theme_list' %}">Courses</a>
+    {% if user.is_authenticated %}
+    | <a href="{% url 'my_certifications' %}">My certifications</a>
+    {% endif %}
+
+
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+        <button type="submit" class="btn">Logout</button>
+      </form>
+    {% else %}
+        | <a href="{% url 'login' %}">Login</a>
+        | <a href="{% url 'register' %}">Sign up</a>
+    {% endif %}
+</header>
+<hr>
+
+
+<div class="container">
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+</div>
+
+<footer style="margin-top: 40px; font-size: 0.9em; text-align: center;">
+    Knowledge Learning – Educational platform (Demo version)
+</footer>
+
+
+</body>
+</html>

@@ -1,29 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h1>{{ lesson.title }}</h1>
 
-<p>{{ lesson.content }}</p>
+{% if has_access %}
+    <!-- Lesson content accessible -->
+    <p>{{ lesson.content }}</p>
 
-{% if user.is_authenticated %}
-    <p>
-        <a href="{% url 'buy_lesson' lesson.id %}">
-            Buy this lesson
-        </a>
-    </p>
+    <iframe
+        width="560"
+        height="315"
+        src="{{ lesson.video_url }}"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+
+    {% if is_validated %}
+        <!-- Lesson already validated -->
+        <p class="success">
+            Lesson already validated.
+        </p>
+    {% else %}
+        <!-- Lesson validation form -->
+        <form method="post" action="{% url 'validate_lesson' lesson.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn">
+                Validate this lesson
+            </button>
+        </form>
+    {% endif %}
 {% else %}
-    <p>Please log in to buy this lesson.</p>
-{% endif %}
-
-{% if user.is_authenticated %}
-    <p>
-        <a href="{% url 'validate_lesson' lesson.id %}">
-            Validate this lesson
-        </a>
+    <!-- No access to lesson -->
+    <p class="warning">
+        You must purchase this lesson or the related course to access the content.
     </p>
-{% endif %}
 
-
-<p>
-    <strong>Video:</strong><br>
-    <a href="{{ lesson.video_url }}" target="_blank">
-        Watch video
+    <a class="btn" href="{% url 'buy_lesson' lesson.id %}">
+        Buy this lesson
     </a>
-</p>
+{% endif %}
+{% endblock %}

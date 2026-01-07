@@ -1,11 +1,17 @@
-<h1>My certifications</h1>
+{% extends "base.html" %}
 
-<ul>
-{% for cert in certifications %}
-    <li>
-        {{ cert.theme.title }} – obtained on {{ cert.obtained_at }}
-    </li>
-{% empty %}
-    <li>No certifications yet</li>
-{% endfor %}
-</ul>
+{% block content %}
+<h1>My Certifications</h1>
+
+{% if certifications %}
+    <ul>
+        {% for certification in certifications %}
+            <li class="success">
+                {{ certification.theme.title }} – Certified
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have not obtained any certifications yet.</p>
+{% endif %}
+{% endblock %}

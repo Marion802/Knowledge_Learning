@@ -19,7 +19,6 @@ def activate_account(request, token):
 
     return HttpResponse("Account successfully activated.")
 
-
 def register(request):
     """
     Handles user registration.
@@ -30,7 +29,9 @@ def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
             user.send_activation_email()
             return render(
                 request,
@@ -44,6 +45,7 @@ def register(request):
         'users/register.html',
         {'form': form}
     )
+
 
 
 def user_login(request):

@@ -1,30 +1,23 @@
 from django import forms
-from .models import User
 from django.contrib.auth import authenticate
+from django.contrib.auth.forms import UserCreationForm
+from .models import User
 
 
-
-
-class UserRegistrationForm(forms.ModelForm):
-    password = forms.CharField(
-        widget=forms.PasswordInput,
-        min_length=8,
-        label="Password"
-    )
+class UserRegistrationForm(UserCreationForm):
+    """
+    User registration form using Django built-in password validation.
+    """
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password']
+        fields = ('username', 'email', 'password1', 'password2')
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password'])
-        user.is_active = False  # activation required
-        if commit:
-            user.save()
-        return user
-    
+
 class UserLoginForm(forms.Form):
+    """
+    User login form with account activation check.
+    """
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
 

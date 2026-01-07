@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Welcome to Knowledge Learning</h1>
+
+<p>
+    Knowledge Learning is an online e-learning platform allowing users to
+    follow training courses autonomously from home.
+</p>
+
+<hr>
+
+{% if user.is_authenticated %}
+    <p>
+        <a class="btn" href="{% url 'theme_list' %}">
+            Access the courses
+        </a>
+    </p>
+{% else %}
+    <p>
+        <a class="btn" href="{% url 'login' %}">
+            Log in
+        </a>
+        &nbsp;
+        <a class="btn" href="{% url 'register' %}">
+            Sign up
+        </a>
+    </p>
+
+
+{% endif %}
+{% endblock %}
